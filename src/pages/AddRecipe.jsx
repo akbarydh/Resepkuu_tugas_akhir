@@ -1,6 +1,5 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { recipes } from "../data/recipes"; // Data dummy dari recipes.js
 
 const AddRecipe = () => {
   const [formData, setFormData] = useState({
@@ -8,7 +7,10 @@ const AddRecipe = () => {
     category: "",
     ingredients: "",
     steps: "",
+    image: "",
   });
+  const [imagePreview, setImagePreview] = useState(null); // Untuk preview gambar
+  const [loading, setLoading] = useState(false); // State untuk loading
   const navigate = useNavigate();
 
   const handleChange = (e) => {
@@ -16,19 +18,60 @@ const AddRecipe = () => {
     setFormData({ ...formData, [name]: value });
   };
 
-  const handleSubmit = (e) => {
+  const handleImageChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setImagePreview(reader.result);
+        setFormData({ ...formData, image: reader.result });
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
+
+    // Validasi tambahan untuk ingredients dan steps
+    if (!formData.ingredients.includes(",") || !formData.steps.includes(".")) {
+      alert("Pastikan bahan dipisahkan dengan koma dan langkah dipisahkan dengan titik.");
+      return;
+    }
+
+    setLoading(true); // Mulai loading
+
     const newRecipe = {
-      id: recipes.length + 1,
-      name: formData.name,
-      category: formData.category,
+      id: Date.now(),
+      name: formData.name.trim(),
+      category: formData.category.trim(),
       ingredients: formData.ingredients.split(",").map((item) => item.trim()),
       steps: formData.steps.split(".").map((item) => item.trim()),
+      image: formData.image || "https://via.placeholder.com/300x200.png?text=Resep+Baru",
     };
 
-    recipes.push(newRecipe); // Simulasi menambah data baru
-    console.log("Resep baru:", newRecipe);
-    navigate("/"); // Redirect ke halaman utama
+    try {
+      const response = await fetch("http://localhost:3001/recipes", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(newRecipe),
+      });
+
+      if (response.ok) {
+        alert("Resep berhasil ditambahkan!");
+        navigate("/"); // Redirect ke halaman Home
+      } else {
+        const errorData = await response.json();
+        alert(`Gagal menambahkan resep: ${errorData.message || "Unknown error"}`);
+      }
+    } catch (error) {
+      console.error("Error:", error);
+      alert("Terjadi kesalahan saat menambahkan resep.");
+    } finally {
+      setLoading(false); // Selesai loading
+    }
   };
 
   return (
@@ -77,11 +120,33 @@ const AddRecipe = () => {
             className="border rounded px-3 py-2 w-full"
           ></textarea>
         </div>
+        <div>
+          <label className="block font-medium">Pilih Gambar (opsional)</label>
+          <input
+            type="file"
+            accept="image/*"
+            onChange={handleImageChange}
+            className="border rounded px-3 py-2 w-full"
+          />
+          {imagePreview && (
+            <div className="mt-4">
+              <img
+                src={imagePreview}
+                alt="Preview"
+                className="w-full max-w-md"
+                onError={(e) => (e.target.src = "https://via.placeholder.com/300x200.png?text=Error+Loading+Image")}
+              />
+            </div>
+          )}
+        </div>
         <button
           type="submit"
-          className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
+          disabled={loading}
+          className={`px-4 py-2 rounded ${
+            loading ? "bg-gray-400 cursor-not-allowed" : "bg-blue-500 hover:bg-blue-600 text-white"
+          }`}
         >
-          Tambah Resep
+          {loading ? "Menambahkan..." : "Tambah Resep"}
         </button>
       </form>
     </div>
