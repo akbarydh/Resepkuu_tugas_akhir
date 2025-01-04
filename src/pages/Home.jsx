@@ -1,5 +1,8 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
+import Button from "../components/Button";
+import Swal from "sweetalert2"; // Import SweetAlert2
+import "sweetalert2/src/sweetalert2.scss"; // Import SweetAlert2 styles
 
 const Home = () => {
   const [recipes, setRecipes] = useState([]);
@@ -27,7 +30,16 @@ const Home = () => {
 
   // Fungsi untuk menghapus resep
   const handleDelete = async (id) => {
-    if (window.confirm("Yakin ingin menghapus resep ini?")) {
+    // Ensure id is correctly used without conflicts
+    const confirmDelete = await Swal.fire({
+      title: "Yakin ingin menghapus resep ini?",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonText: "Ya, hapus!",
+      cancelButtonText: "Batal",
+    });
+
+    if (confirmDelete.isConfirmed) {
       try {
         const response = await fetch(`${API_URL}/${id}`, {
           method: "DELETE",
@@ -36,44 +48,48 @@ const Home = () => {
         setRecipes((prevRecipes) =>
           prevRecipes.filter((recipe) => recipe.id !== id)
         );
-        alert("Resep berhasil dihapus!");
+        Swal.fire({
+          icon: "success",
+          title: "Berhasil",
+          text: "Resep berhasil dihapus!",
+        });
       } catch (error) {
         console.error("Error deleting recipe:", error.message);
-        alert("Gagal menghapus resep, coba lagi.");
+        Swal.fire({
+          icon: "error",
+          title: "Gagal",
+          text: "Gagal menghapus resep, coba lagi.",
+        });
       }
     }
   };
 
   return (
-    <div className="p-4">
-      <h2 className="text-xl font-semibold mb-4">Daftar Resep</h2>
-      <Link
-        to="/add"
-        className="inline-block bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 mb-4"
-      >
-        Tambah Resep
+    <div className="p-4 bg-white rounded-lg shadow-md">
+      <h2 className="text-2xl font-bold mb-4 text-gray-800">Daftar Resep</h2>
+      <Link to="/add">
+        <Button className="btn-primary mb-4">Tambah Resep</Button>
       </Link>
       {loading ? (
         <p>Sedang memuat data...</p>
       ) : recipes.length > 0 ? (
-        <ul>
+        <ul className="space-y-4">
           {recipes.map((recipe) => (
-            <li key={recipe.id} className="mb-2 flex items-center justify-between">
+            <li key={recipe.id} className="flex items-center justify-between p-4 border rounded-lg shadow-sm bg-gray-50">
               <div>
-                <Link
-                  to={`/recipe/${recipe.id}`}
-                  className="text-blue-500 hover:underline"
-                >
+                <Link to={`/recipe/${recipe.id}`} className="text-blue-600 hover:underline font-semibold">
                   {recipe.name}
                 </Link>{" "}
                 - {recipe.category}
               </div>
-              <button
-                onClick={() => handleDelete(recipe.id)}
-                className="ml-4 bg-red-500 text-white px-2 py-1 rounded hover:bg-red-600"
-              >
-                Hapus
-              </button>
+              <div className="flex gap-2">
+                <Link to={`/edit/${recipe.id}`}>
+                  <Button className="btn-success text-white bg-green-500 hover:bg-green-700">Edit</Button>
+                </Link>
+                <Button onClick={() => handleDelete(recipe.id)} className="btn-error text-white bg-red-500 hover:bg-red-700">
+                  Hapus
+                </Button>
+              </div>
             </li>
           ))}
         </ul>

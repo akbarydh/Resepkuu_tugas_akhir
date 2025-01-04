@@ -1,13 +1,19 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useParams, Link, useNavigate } from "react-router-dom";
+import Button from "../components/Button";
+import Swal from "sweetalert2"; // Import SweetAlert2
+import "sweetalert2/src/sweetalert2.scss"; // Import SweetAlert2 styles
 
 const RecipeDetail = () => {
   const { id } = useParams();
+  // State untuk menyimpan data resep
   const [recipe, setRecipe] = useState(null);
+  // State untuk status loading
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
 
   useEffect(() => {
+    // Fungsi untuk mengambil data resep berdasarkan ID
     const fetchRecipe = async () => {
       setLoading(true);
       try {
@@ -25,16 +31,30 @@ const RecipeDetail = () => {
     fetchRecipe();
   }, [id]);
 
+  // Fungsi untuk menghapus resep
   const handleDelete = async () => {
+    // Ensure id is correctly used without conflicts
     const confirmDelete = window.confirm("Yakin ingin menghapus resep?");
     if (confirmDelete) {
       try {
-        await fetch(`http://localhost:3001/recipes/${id}`, {
+        const response = await fetch(`http://localhost:3001/recipes/${id}`, {
           method: "DELETE",
         });
-        navigate("/");
+
+        if (response.ok) {
+          Swal.fire({
+            icon: "success",
+            title: "Berhasil",
+            text: "Resep berhasil dihapus!",
+          }).then(() => {
+            navigate("/");
+          });
+        } else {
+          alert("Gagal menghapus resep.");
+        }
       } catch (error) {
         console.error("Error deleting recipe:", error);
+        alert("Terjadi kesalahan saat menghapus resep.");
       }
     }
   };
@@ -76,18 +96,15 @@ const RecipeDetail = () => {
         </div>
       )}
       <div className="mt-4 flex gap-2">
-        <Link to="/" className="text-blue-500 hover:underline">
+        <Link to="/" className="btn btn-secondary">
           Kembali ke Home
         </Link>
-        <Link to={`/edit/${id}`} className="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600">
-          Edit Resep
+        <Link to={`/edit/${id}`}>
+          <Button className="btn-success">Edit Resep</Button>
         </Link>
-        <button
-          onClick={handleDelete}
-          className="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600"
-        >
+        <Button onClick={handleDelete} className="btn-error">
           Hapus Resep
-        </button>
+        </Button>
       </div>
     </div>
   );
