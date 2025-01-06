@@ -1,26 +1,6 @@
 {
   "recipes": [
     {
-      "name": "Nasi Goreng",
-      "category": "Main Course",
-      "ingredients": [
-        "sego",
-        "Kecap",
-        "Telur",
-        "Bawang Merah",
-        "Bawang Putih"
-      ],
-      "steps": [
-        "Panaskan minyak",
-        "Tumis bawang",
-        "Masukkan nasi",
-        "Tambahkan kecap",
-        "Aduk rata"
-      ],
-      "image": "https://via.placeholder.com/300x200.png?text=Nasi+Goreng",
-      "id": "1"
-    },
-    {
       "id": "2",
       "name": "Sate Ayam",
       "category": "Main Course",

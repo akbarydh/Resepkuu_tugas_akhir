@@ -6,14 +6,11 @@ import "sweetalert2/src/sweetalert2.scss"; // Import SweetAlert2 styles
 
 const RecipeDetail = () => {
   const { id } = useParams();
-  // State untuk menyimpan data resep
   const [recipe, setRecipe] = useState(null);
-  // State untuk status loading
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
 
   useEffect(() => {
-    // Fungsi untuk mengambil data resep berdasarkan ID
     const fetchRecipe = async () => {
       setLoading(true);
       try {
@@ -31,11 +28,16 @@ const RecipeDetail = () => {
     fetchRecipe();
   }, [id]);
 
-  // Fungsi untuk menghapus resep
   const handleDelete = async () => {
-    // Ensure id is correctly used without conflicts
-    const confirmDelete = window.confirm("Yakin ingin menghapus resep?");
-    if (confirmDelete) {
+    const confirmDelete = await Swal.fire({
+      title: "Yakin ingin menghapus resep ini?",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonText: "Ya, hapus!",
+      cancelButtonText: "Batal",
+    });
+
+    if (confirmDelete.isConfirmed) {
       try {
         const response = await fetch(`http://localhost:3001/recipes/${id}`, {
           method: "DELETE",
@@ -50,24 +52,32 @@ const RecipeDetail = () => {
             navigate("/");
           });
         } else {
-          alert("Gagal menghapus resep.");
+          Swal.fire({
+            icon: "error",
+            title: "Gagal",
+            text: "Gagal menghapus resep.",
+          });
         }
       } catch (error) {
         console.error("Error deleting recipe:", error);
-        alert("Terjadi kesalahan saat menghapus resep.");
+        Swal.fire({
+          icon: "error",
+          title: "Gagal",
+          text: "Terjadi kesalahan saat menghapus resep.",
+        });
       }
     }
   };
 
   if (loading) {
-    return <p>Loading...</p>;
+    return <p className="text-center text-gray-500">Sedang memuat data...</p>;
   }
 
   if (!recipe) {
     return (
-      <div className="p-4">
-        <h2 className="text-2xl font-bold mb-4">Resep tidak ditemukan!</h2>
-        <Link to="/" className="text-blue-500 hover:underline">
+      <div className="p-6 text-center">
+        <h2 className="text-2xl font-bold text-red-500">Resep tidak ditemukan!</h2>
+        <Link to="/" className="text-blue-500 hover:underline mt-4 block">
           Kembali ke Home
         </Link>
       </div>
@@ -75,36 +85,59 @@ const RecipeDetail = () => {
   }
 
   return (
-    <div className="p-4">
-      <h2 className="text-2xl font-bold mb-4">{recipe.name}</h2>
-      <p className="mb-2">Kategori: {recipe.category}</p>
-      <h3 className="text-xl font-semibold mt-4">Bahan-Bahan:</h3>
-      <ul className="list-disc ml-5">
-        {recipe.ingredients?.map((ingredient, index) => (
-          <li key={index}>{ingredient}</li>
-        ))}
-      </ul>
-      <h3 className="text-xl font-semibold mt-4">Langkah-Langkah:</h3>
-      <ol className="list-decimal ml-5">
-        {recipe.steps?.map((step, index) => (
-          <li key={index}>{step}</li>
-        ))}
-      </ol>
+    <div className="p-6 max-w-4xl mx-auto bg-white rounded-lg shadow-lg">
+      <h1 className="text-3xl font-bold text-gray-800 mb-4 text-center">
+        {recipe.name}
+      </h1>
       {recipe.image && (
-        <div className="mt-4">
-          <img src={recipe.image} alt={recipe.name} className="w-full max-w-md" />
+        <div className="w-full h-64 bg-gray-200 rounded-lg overflow-hidden mb-6">
+          <img
+            src={recipe.image}
+            alt={recipe.name}
+            className="w-full h-full object-cover"
+          />
         </div>
       )}
-      <div className="mt-4 flex gap-2">
-        <Link to="/" className="btn btn-secondary">
+      <p className="text-gray-600 text-lg font-semibold mb-6 text-center">
+        Kategori: <span className="text-gray-800">{recipe.category}</span>
+      </p>
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+        <div>
+          <h2 className="text-2xl font-bold text-gray-800 mb-4">Bahan-Bahan</h2>
+          <ul className="list-disc list-inside text-gray-600">
+            {recipe.ingredients?.map((ingredient, index) => (
+              <li key={index} className="mb-2">{ingredient}</li>
+            ))}
+          </ul>
+        </div>
+        <div>
+          <h2 className="text-2xl font-bold text-gray-800 mb-4">Langkah-Langkah</h2>
+          <ol className="list-decimal list-inside text-gray-600">
+            {recipe.steps?.map((step, index) => (
+              <li key={index} className="mb-2">{step}</li>
+            ))}
+          </ol>
+        </div>
+      </div>
+      <div className="mt-8 flex justify-center gap-4">
+        <Link
+          to="/"
+          className="px-6 py-2 bg-blue-500 text-white font-medium rounded-lg shadow-md hover:bg-blue-400"
+        >
           Kembali ke Home
         </Link>
-        <Link to={`/edit/${id}`}>
-          <Button className="btn-success">Edit Resep</Button>
+        <Link
+          to={`/edit/${id}`}
+          className="px-6 py-2 bg-green-500 text-white font-medium rounded-lg shadow-md hover:bg-green-400"
+        >
+          Edit Resep
         </Link>
-        <Button onClick={handleDelete} className="btn-error">
+        <button
+          onClick={handleDelete}
+          className="px-6 py-2 bg-red-500 text-white font-medium rounded-lg shadow-md hover:bg-red-400"
+        >
           Hapus Resep
-        </Button>
+        </button>
       </div>
     </div>
   );

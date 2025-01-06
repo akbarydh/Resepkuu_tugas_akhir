@@ -6,12 +6,11 @@ import "sweetalert2/src/sweetalert2.scss"; // Import SweetAlert2 styles
 
 const Home = () => {
   const [recipes, setRecipes] = useState([]);
-  const [loading, setLoading] = useState(false); // State untuk loading
-  const API_URL = "http://localhost:3001/recipes"; // URL ke JSON Server
+  const [loading, setLoading] = useState(false);
+  const API_URL = "http://localhost:3001/recipes";
 
-  // Fungsi untuk mengambil semua resep
   const fetchRecipes = async () => {
-    setLoading(true); // Mulai loading
+    setLoading(true);
     try {
       const response = await fetch(API_URL);
       if (!response.ok) throw new Error("Gagal mengambil data resep");
@@ -20,17 +19,15 @@ const Home = () => {
     } catch (error) {
       console.error("Error fetching recipes:", error.message);
     } finally {
-      setLoading(false); // Selesai loading
+      setLoading(false);
     }
   };
 
   useEffect(() => {
-    fetchRecipes(); // Panggil saat komponen pertama kali di-render
+    fetchRecipes();
   }, []);
 
-  // Fungsi untuk menghapus resep
   const handleDelete = async (id) => {
-    // Ensure id is correctly used without conflicts
     const confirmDelete = await Swal.fire({
       title: "Yakin ingin menghapus resep ini?",
       icon: "warning",
@@ -65,36 +62,60 @@ const Home = () => {
   };
 
   return (
-    <div className="p-4 bg-white rounded-lg shadow-md">
-      <h2 className="text-2xl font-bold mb-4 text-gray-800">Daftar Resep</h2>
-      <Link to="/add">
-        <Button className="btn-primary mb-4">Tambah Resep</Button>
-      </Link>
+    <div className="p-8 bg-gray-50 min-h-screen">
+      <h1 className="text-4xl font-serif text-gray-800 text-center mb-8">
+        Resep Favoritmu
+      </h1>
+      <div className="flex justify-center mb-10">
+        <Link to="/add">
+          <Button className="bg-gray-800 hover:bg-gray-700 text-white font-medium py-2 px-6 rounded-lg shadow-lg">
+            Tambah Resep
+          </Button>
+        </Link>
+      </div>
       {loading ? (
-        <p>Sedang memuat data...</p>
+        <p className="text-center text-gray-600">Memuat data resep...</p>
       ) : recipes.length > 0 ? (
-        <ul className="space-y-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 max-w-7xl mx-auto">
           {recipes.map((recipe) => (
-            <li key={recipe.id} className="flex items-center justify-between p-4 border rounded-lg shadow-sm bg-gray-50">
-              <div>
-                <Link to={`/recipe/${recipe.id}`} className="text-blue-600 hover:underline font-semibold">
+            <div
+              key={recipe.id}
+              className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow duration-300"
+            >
+              <Link to={`/recipe/${recipe.id}`}>
+                <img
+                  src={recipe.image || "https://via.placeholder.com/300"}
+                  alt={recipe.name}
+                  className="w-full h-48 object-cover"
+                />
+              </Link>
+              <div className="p-4">
+                <Link
+                  to={`/recipe/${recipe.id}`}
+                  className="text-lg font-bold text-gray-800 hover:text-gray-600 block mb-2"
+                >
                   {recipe.name}
-                </Link>{" "}
-                - {recipe.category}
-              </div>
-              <div className="flex gap-2">
-                <Link to={`/edit/${recipe.id}`}>
-                  <Button className="btn-success text-white bg-green-500 hover:bg-green-700">Edit</Button>
                 </Link>
-                <Button onClick={() => handleDelete(recipe.id)} className="btn-error text-white bg-red-500 hover:bg-red-700">
-                  Hapus
-                </Button>
+                <p className="text-sm text-gray-600 mb-4">{recipe.category}</p>
+                <div className="flex justify-between">
+                  <Link to={`/edit/${recipe.id}`}>
+                    <Button className="bg-blue-500 hover:bg-blue-400 text-white py-1 px-4 rounded-md">
+                      Edit
+                    </Button>
+                  </Link>
+                  <Button
+                    onClick={() => handleDelete(recipe.id)}
+                    className="bg-red-500 hover:bg-red-400 text-white py-1 px-4 rounded-md"
+                  >
+                    Hapus
+                  </Button>
+                </div>
               </div>
-            </li>
+            </div>
           ))}
-        </ul>
+        </div>
       ) : (
-        <p>Tidak ada resep ditemukan.</p>
+        <p className="text-center text-gray-600">Belum ada resep tersimpan.</p>
       )}
     </div>
   );

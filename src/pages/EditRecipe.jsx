@@ -87,67 +87,59 @@ const EditRecipe = () => {
   };
 
   return (
-    <div className="p-4 max-w-2xl mx-auto">
-      <h2 className="text-xl font-semibold mb-4">Edit Resep</h2>
-      <form onSubmit={handleSubmit} className="space-y-4">
-        <div className="form-control">
-          <label className="label">
-            <span className="label-text">Nama Resep</span>
-          </label>
+    <div className="p-6 max-w-4xl mx-auto bg-white shadow-md rounded-lg">
+      <h2 className="text-3xl font-bold text-gray-800 mb-6 text-center">Edit Resep</h2>
+      <form onSubmit={handleSubmit} className="space-y-6">
+        <div>
+          <label className="block text-lg font-medium text-gray-700 mb-2">Nama Resep</label>
           <input
             type="text"
             name="name"
             value={formData.name}
             onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-            className="input input-bordered bg-white text-black"
+            className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring focus:ring-green-200"
             required
           />
         </div>
 
-        <div className="form-control">
-          <label className="label">
-            <span className="label-text">Kategori</span>
-          </label>
+        <div>
+          <label className="block text-lg font-medium text-gray-700 mb-2">Kategori</label>
           <input
             type="text"
             name="category"
             value={formData.category}
             onChange={(e) => setFormData({ ...formData, category: e.target.value })}
-            className="input input-bordered bg-white text-black"
+            className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring focus:ring-green-200"
             required
           />
         </div>
 
-        <div className="form-control">
-          <label className="label">
-            <span className="label-text">Bahan-bahan (masukkan satu per baris)</span>
-          </label>
+        <div>
+          <label className="block text-lg font-medium text-gray-700 mb-2">Bahan-bahan</label>
           <textarea
             name="ingredients"
             value={formData.ingredients}
             onChange={(e) => setFormData({ ...formData, ingredients: e.target.value })}
-            className="textarea textarea-bordered bg-white text-black"
+            className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring focus:ring-green-200"
+            rows="5"
             required
           ></textarea>
         </div>
 
-        <div className="form-control">
-          <label className="label">
-            <span className="label-text">Langkah-langkah (masukkan satu per baris)</span>
-          </label>
+        <div>
+          <label className="block text-lg font-medium text-gray-700 mb-2">Langkah-langkah</label>
           <textarea
             name="steps"
             value={formData.steps}
             onChange={(e) => setFormData({ ...formData, steps: e.target.value })}
-            className="textarea textarea-bordered bg-white text-black"
+            className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring focus:ring-green-200"
+            rows="5"
             required
           ></textarea>
         </div>
 
-        <div className="form-control">
-          <label className="label">
-            <span className="label-text">Gambar (opsional)</span>
-          </label>
+        <div>
+          <label className="block text-lg font-medium text-gray-700 mb-2">Gambar</label>
           <input
             type="file"
             accept="image/*"
@@ -159,11 +151,14 @@ const EditRecipe = () => {
                 reader.readAsDataURL(file);
               }
             }}
-            className="file-input file-input-bordered bg-white text-black"
+            className="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded file:border-0 file:text-sm file:font-semibold file:bg-green-50 file:text-green-700 hover:file:bg-green-100"
           />
         </div>
 
-        <button type="submit" className="btn btn-primary">
+        <button
+          type="submit"
+          className="w-full bg-green-500 text-white font-bold py-2 px-4 rounded-md hover:bg-green-600 focus:ring focus:ring-green-200"
+        >
           Simpan Perubahan
         </button>
       </form>

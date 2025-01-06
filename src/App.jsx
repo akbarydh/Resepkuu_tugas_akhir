@@ -16,7 +16,7 @@ const App = () => {
           <Route path="/add" element={<AddRecipe />} />
           <Route path="/recipe/:id" element={<RecipeDetail />} />
           <Route path="/edit/:id" element={<EditRecipe />} /> {/* Route ke halaman edit resep */}
-        </Routes>
+x        </Routes>
       </div>
     </Router>
   );
