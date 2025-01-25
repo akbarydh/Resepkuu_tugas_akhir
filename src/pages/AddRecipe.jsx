@@ -19,7 +19,7 @@ const AddRecipe = () => {
     const { name, value } = e.target;
     setFormData({ ...formData, [name]: value });
   };
-
+// gambar
   const handleImageChange = (e) => {
     const file = e.target.files[0];
     if (file) {
@@ -43,7 +43,7 @@ const AddRecipe = () => {
       steps: formData.steps.split("\n").map((item) => item.trim()),
       image: formData.image || "https://via.placeholder.com/300x200.png?text=Resep+Baru",
     };
-
+// kirim data
     try {
       const response = await fetch("http://localhost:3001/recipes", {
         method: "POST",

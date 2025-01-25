@@ -4,7 +4,7 @@ import Button from "../components/Button";
 import Swal from "sweetalert2"; // Import SweetAlert2
 import "sweetalert2/src/sweetalert2.scss"; // Import SweetAlert2 styles
 
-const Home = () => {
+const Home = () => { 
   const [recipes, setRecipes] = useState([]);
   const [loading, setLoading] = useState(false);
   const API_URL = "http://localhost:3001/recipes";
@@ -26,6 +26,7 @@ const Home = () => {
   useEffect(() => {
     fetchRecipes();
   }, []);
+
 
   const handleDelete = async (id) => {
     const confirmDelete = await Swal.fire({
